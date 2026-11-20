@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Tender participation, without the copy-paste.</h1>
+  <p>Upload a GeM bid document. The app reads the bid number, dates, category and buyer address,
+     fills your ATC, and builds the exemption documents with the right letter numbers and dates.
+     You get the final PDFs, ready to upload on the GeM portal.</p>
+  <a class="btn big" href="{{ url_for('participate.participate') }}">Participate in a tender →</a>
+</section>
+
+<section class="how">
+  <h2>How it works</h2>
+  <div class="grid4">
+    <div class="card"><span class="num">1</span><h3>Upload</h3><p>Choose the company, upload the bid PDF and tick the documents you need.</p></div>
+    <div class="card"><span class="num">2</span><h3>Check details</h3><p>Everything found in the bid is shown. Fix anything, see the final wording instantly.</p></div>
+    <div class="card"><span class="num">3</span><h3>Arrange documents</h3><p>Set the page order of each exemption document, add your own uploads.</p></div>
+    <div class="card"><span class="num">4</span><h3>Generate</h3><p>Preview every page, download each PDF or one ZIP. All saved in a folder per bid.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Recent tenders</h2>
+  {% if tenders %}
+  <table class="table">
+    <tr><th>Bid number</th><th>Company</th><th>Filing date</th><th>Status</th><th></th></tr>
+    {% for r in tenders %}
+    <tr>
+      <td>{{ r.bid_number or '-' }}</td><td>{{ r.company }}</td><td>{{ r.filing_date | dmy }}</td>
+      <td><span class="pill {{ r.status }}">{{ r.status }}</span></td>
+      <td><a href="{{ url_for('bid.details', tid=r.id) }}">Open</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">No tenders yet. Start with “Participate”.</p>{% endif %}
+  <p class="muted small">PDF converter available on this computer:
+    {{ engines | join(', ') if engines else 'none found - install LibreOffice or Microsoft Word + docx2pdf' }}</p>
+</section>
+{% endblock %}

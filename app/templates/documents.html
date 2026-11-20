@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Documents · Tender Automation{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+  <p class="muted">Tick the documents you want. For the exemption documents you can change the page order or leave an attachment out.</p>
+
+  {% for c in cards %}
+  <section class="card doc {{ 'off' if not c.selected }}">
+    <label class="check head">
+      <input type="checkbox" name="sel_{{ c.key }}" {{ 'checked' if c.selected }}>
+      <span class="title">{{ c.title }}</span>
+      <span class="pill">{{ {'template':'from template','slice':'letter + attachments','upload':'your own PDF'}[c.kind] }}</span>
+    </label>
+
+    {% if c.kind == 'template' %}
+      <p class="muted small">The whole ATC. Letter numbers that will be printed, in order:</p>
+      <p class="chips">{% for n in c.letters %}<span class="chip">{{ n }}</span>{% endfor %}</p>
+    {% elif c.kind == 'slice' %}
+      <table class="table parts">
+        <tr><th>Include</th><th>Order</th><th>Page(s)</th><th>Part</th></tr>
+        {% for p in c.parts %}
+        <tr>
+          <td>{% if p.locked %}✓{% else %}<input type="checkbox" name="use_{{ c.key }}_{{ p.key }}" {{ 'checked' if p.use }}>{% endif %}</td>
+          <td><input class="ord" type="number" min="1" max="20" name="order_{{ c.key }}_{{ p.key }}" value="{{ p.order }}"></td>
+          <td>{{ p.pages }}</td><td>{{ p.label }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% elif c.kind == 'upload' %}
+      <p class="muted small">{{ c.note }}</p>
+      <p class="small">{% if c.uploaded %}Uploaded: <a href="{{ url_for('bid.file', tid=t.id, sub='uploads', name='price_breakup.pdf') }}">price_breakup.pdf</a>{% else %}No file uploaded yet.{% endif %}</p>
+      <label>Upload / replace <input type="file" name="price_breakup_pdf" accept="application/pdf,.pdf"></label>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <section class="card doc">
+    <h3>Other PDFs to include</h3>
+    {% if extras %}
+      <ul class="small">{% for e in extras %}<li>{{ e.split('/')[-1] }}
+        <label class="inline"><input type="checkbox" name="remove_extra" value="{{ e }}"> remove</label></li>{% endfor %}</ul>
+    {% else %}<p class="muted small">None. Add EMD proof or any other document here.</p>{% endif %}
+    <label>Add PDFs <input type="file" name="extra_pdfs" accept="application/pdf,.pdf" multiple></label>
+  </section>
+
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('bid.details', tid=t.id) }}">← Back</a>
+    <button class="btn ghost" name="action" value="save">Save</button>
+    <button class="btn" name="action" value="next">Save and continue →</button>
+  </div>
+</form>
+{% endblock %}

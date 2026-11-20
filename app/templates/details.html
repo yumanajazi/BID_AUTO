@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Bid details · Tender Automation{% endblock %}
+{% block content %}
+
+{% for level, msg in warnings %}<div class="flash {{ 'error' if level == 'error' else ('warn' if level == 'warn' else 'info') }}">{{ msg }}</div>{% endfor %}
+
+<form method="post" id="detailsform" data-preview-url="{{ url_for('bid.preview_text', tid=t.id) }}">
+<div class="cols">
+  <div class="card form">
+    <h2>What goes into your documents</h2>
+
+    <label>GeM bid number
+      <input name="bid_number" value="{{ f.bid_number }}" required>
+    </label>
+    <div class="row2">
+      <label>Bid opening date <span class="hint">for “dated:” lines</span>
+        <input type="date" name="bid_opening" value="{{ f.bid_opening }}" required>
+      </label>
+      <label>Date of filing <span class="hint">default: today</span>
+        <input type="date" name="filing_date" value="{{ f.filing_date }}" required>
+      </label>
+    </div>
+    <label>Bid published date <span class="hint">(information only)</span>
+      <input type="date" name="bid_published" value="{{ f.bid_published }}">
+    </label>
+    <label>Bid category and work
+      <textarea name="category" rows="3" required>{{ f.category }}</textarea>
+    </label>
+
+    <h3>Buyer address</h3>
+    <label>Line 1 - main person / position <span class="hint">e.g. PRINCIPAL, Superintending Engineer</span>
+      <input name="buyer_designation" value="{{ f.buyer_designation }}">
+    </label>
+    <label>Line 2 - office address, or department if no address
+      <textarea name="buyer_office" rows="3" required>{{ f.buyer_office }}</textarea>
+    </label>
+    <label>Line 3 - district, state, pin code <span class="hint">leave empty if not given</span>
+      <input name="buyer_line3" id="line3" value="{{ f.buyer_line3 }}">
+    </label>
+    {% if f.consignee_hint %}
+      <p class="muted small">Consignee address found in the bid:
+        <em>{{ f.consignee_hint }}</em>
+        <button type="button" class="link" id="usehint" data-text="{{ f.consignee_hint }}">use as line 3</button></p>
+    {% endif %}
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <h2>Final wording <span class="live">live</span></h2>
+      <p class="label">“To,” block</p>
+      <pre class="paper" id="pv_block">{{ ctx.buyer_block }}</pre>
+      <p class="label">Inside sentences</p>
+      <pre class="paper wrap" id="pv_inline">{{ ctx.buyer_inline }}</pre>
+      <p class="label">Bid number line</p>
+      <pre class="paper wrap">GeM Bid Number: <span id="pv_bid">{{ ctx.bid_number }}</span>, dated: <span id="pv_bid_date">{{ ctx.bid_date }}</span> in <span id="pv_cat">{{ ctx.category }}</span></pre>
+      <p class="label">Signing / filing date</p>
+      <pre class="paper" id="pv_filing">{{ ctx.filing_date }}</pre>
+      <p class="label">First letter number</p>
+      <pre class="paper" id="pv_letter">{{ sample_letter }}</pre>
+    </div>
+
+    <div class="card">
+      <h2>Found in the bid</h2>
+      <dl class="facts">
+        <dt>Closing date</dt><dd>{{ f.bid_end | dmy }}</dd>
+        <dt>Contract period</dt><dd>{{ f.contract_period or '-' }}</dd>
+        <dt>EMD amount</dt><dd>{{ ('Rs. ' + f.emd_amount) if f.emd_amount else 'none' }}{% if f.emd_exemption_clause %} · exemption clause present{% endif %}</dd>
+        <dt>Turnover needed</dt><dd>{{ f.turnover_required or '-' }}</dd>
+        <dt>Experience needed</dt><dd>{{ f.experience_required or '-' }}</dd>
+        <dt>MSE relaxation</dt><dd>{{ f.mse_relax_experience or '-' }}</dd>
+        <dt>Startup relaxation</dt><dd>{{ f.startup_relax_experience or '-' }}</dd>
+        <dt>Officer</dt><dd>{{ f.buyer_officer or '-' }}</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn ghost" name="action" value="save">Save</button>
+  <button class="btn" name="action" value="next">Save and continue →</button>
+</div>
+</form>
+{% endblock %}

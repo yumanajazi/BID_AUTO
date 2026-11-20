@@ -1,0 +1,31 @@
+# ---------------------------------------------------------------
+#  COMPANY PROFILE  -  SNTA Services Pvt. Ltd.
+#  One folder per company keeps companies completely separate:
+#     companies/<slug>/company.yaml     <- this file
+#     companies/<slug>/recipes.yaml     <- which documents to make & how
+#     companies/<slug>/templates/       <- the Word templates with {{ }} marks
+#     companies/<slug>/attachments/     <- fixed PDFs (certificates, memos)
+#  To add another company: copy this whole folder, rename it, edit the files.
+# ---------------------------------------------------------------
+name: "SNTA Services Pvt. Ltd."
+slug: snta
+
+# Letter numbers look like  <ref_prefix>/<DDMM>/<financial year>/<serial>
+# e.g.  SNTA/0911/2026-27/01
+ref_prefix: SNTA
+
+# The main Word template (the full ATC with {{ }} marks).
+template: templates/atc.docx
+
+# Maps the text you typed inside {{ }} in Word  ->  the data field it should use.
+# Spaces and capital letters are ignored, so {{Current Date}} == {{currentdate}}.
+# To add a new mark in Word, add one line here (left side = your mark, right side
+# = a field name from app/services/normalizer.py -> build_context()).
+placeholders:
+  "BID No. from BID DOC": bid_number
+  "Gem Bid Number": bid_number
+  "Bid Closing Date": bid_date              # we always use the bid OPENING date
+  "Bid Category": category
+  "Buyer and address Details": buyer_inline        # one flowing sentence version
+  "Buyer and Departmentaddress Details": buyer_block  # 2-3 line "To," version
+  "Current Date": filing_date               # the day the documents are made

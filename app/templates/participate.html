@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Participate · Tender Automation{% endblock %}
+{% block content %}
+<h1>Participate in a tender</h1>
+<p class="muted">Upload the bid document PDF (or the merged PDF: bid document + buyer ATC). Nothing leaves this computer.</p>
+
+<form method="post" enctype="multipart/form-data" class="card form" id="partform">
+  <label>Company
+    <select name="company" id="company">
+      {% for c in companies %}<option value="{{ c.slug }}" {{ 'selected' if c.slug == default_company }}>{{ c.name }}</option>{% endfor %}
+    </select>
+  </label>
+
+  <label>Bid document (PDF)
+    <input type="file" name="bid_pdf" accept="application/pdf,.pdf" required>
+  </label>
+
+  <fieldset>
+    <legend>Documents to prepare</legend>
+    <div id="doclist"></div>
+  </fieldset>
+
+  <div id="pbbox" class="subbox" hidden>
+    <label>Your Price Breakup PDF
+      <input type="file" name="price_breakup_pdf" accept="application/pdf,.pdf">
+    </label>
+    <p class="muted small">Price breakup is not automated yet. Your own PDF is included in the package as it is.</p>
+  </div>
+
+  <label>Other PDFs to include (optional - e.g. EMD proof when a bid needs EMD)
+    <input type="file" name="extra_pdfs" accept="application/pdf,.pdf" multiple>
+  </label>
+
+  <button class="btn big" type="submit">Read the bid →</button>
+</form>
+
+<script>window.DOCS = {{ docs_by_company | tojson }};</script>
+{% endblock %}

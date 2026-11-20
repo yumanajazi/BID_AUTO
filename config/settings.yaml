@@ -1,0 +1,21 @@
+# ---------------------------------------------------------------
+#  GLOBAL SETTINGS  (edit this file to change how the app behaves)
+# ---------------------------------------------------------------
+
+# Where every bid's files are saved. Relative paths are relative to the
+# project folder. You can point this anywhere on your computer, e.g.
+#   output_root: "D:/Tenders"
+output_root: outputs
+
+# Which company is pre-selected on the Participate page.
+default_company: snta
+
+# How Word files are turned into PDF:
+#   auto        -> use Microsoft Word if available (best fidelity), else LibreOffice
+#   word        -> only Microsoft Word  (needs: pip install docx2pdf, Windows/macOS)
+#   libreoffice -> only LibreOffice
+converter: auto
+
+# Local web address of the app.
+host: 127.0.0.1
+port: 5000

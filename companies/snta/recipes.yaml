@@ -1,0 +1,74 @@
+# ---------------------------------------------------------------
+#  DOCUMENT RECIPES  -  what final PDFs exist and how each is built.
+#  To add a new final document later you normally only add a block here.
+# ---------------------------------------------------------------
+
+# Fixed PDFs kept in companies/snta/attachments/
+attachments:
+  om_2017_emd:
+    file: attachments/om_2017_emd.pdf
+    label: "Ministry of Finance Office Memorandum 2017 (EMD, Rule 170)"
+  udyam_certificate:
+    file: attachments/udyam_certificate.pdf
+    label: "Udyam Registration Certificate"
+  udyam_summary:
+    file: attachments/udyam_summary.pdf
+    label: "Udyam details page (enterprise summary)"
+  om_2016_exemption:
+    file: attachments/om_2016_exemption.pdf
+    label: "Ministry of Finance Office Memorandum 2016 (English + Hindi)"
+
+documents:
+  # ---- 1. The full ATC, made from the whole template ----------------------
+  - key: atc
+    title: "ATC (Additional Terms & Conditions)"
+    file_label: "ATC"
+    kind: template
+    default: true
+
+  # ---- 2-4. One letter taken out of the filled ATC + fixed PDFs ----------
+  #  "slice" tells the program where the letter starts and ends inside the ATC:
+  #    start_marker : text that begins the letter (the closest one above heading)
+  #    heading      : text of the letter's title
+  #    end_marker   : text that begins the NEXT letter
+  #  parts: ordered list. "letter" = the generated page, others = attachments above.
+  - key: emd_exemption
+    title: "MSE - EMD Exemption"
+    file_label: "MSE_EMD_Exemption"
+    kind: slice
+    default: true
+    slice:
+      start_marker: "Letter No."
+      heading: "EARNEST MONEY DEPOSIT"
+      end_marker: "Letter No."
+    parts: [letter, om_2017_emd, udyam_certificate]
+
+  - key: turnover_exemption
+    title: "Turnover Exemption"
+    file_label: "Turnover_Exemption"
+    kind: slice
+    default: true
+    slice:
+      start_marker: "Ref:"
+      heading: "EXEMPTION OF TURN OVER"
+      end_marker: "Ref:"
+    parts: [letter, udyam_certificate, udyam_summary, om_2016_exemption]
+
+  - key: experience_exemption
+    title: "Work Experience Exemption"
+    file_label: "Experience_Exemption"
+    kind: slice
+    default: true
+    slice:
+      start_marker: "Ref:"
+      heading: "EXEMPTION OF EXPERIENCE"
+      end_marker: "Ref:"
+    parts: [letter, om_2016_exemption, udyam_certificate, udyam_summary]
+
+  # ---- 5. Price breakup: NOT automated yet. You upload your own PDF. ------
+  - key: price_breakup
+    title: "Price Breakup"
+    file_label: "Price_Breakup"
+    kind: upload
+    default: false
+    note: "Not automated yet - tick it and upload your own PDF."

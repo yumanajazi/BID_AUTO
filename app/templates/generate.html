@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Generate · Tender Automation{% endblock %}
+{% block content %}
+
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+
+<form method="post" id="genform" class="card genbox">
+  <div>
+    <h2>{{ 'Generate again' if manifest else 'Ready to generate' }}</h2>
+    <p class="muted small">Documents: {{ state.selected_docs | length }} selected ·
+       Filing date {{ state.fields.filing_date | dmy }} · Bid dated {{ state.fields.bid_opening | dmy }}.
+       This takes up to a minute (each Word file is converted to PDF).</p>
+  </div>
+  <button class="btn big" type="submit">{{ 'Regenerate' if manifest else 'Generate documents' }}</button>
+</form>
+<div id="busy" class="busy" hidden><div class="spin"></div><p>Making your documents… please wait.</p></div>
+
+{% if manifest %}
+  {% for w in manifest.warnings %}<div class="flash warn">{{ w }}</div>{% endfor %}
+
+  <section class="card">
+    <div class="between">
+      <div>
+        <h2>Your documents</h2>
+        <p class="muted small">Made {{ manifest.generated_at }} using {{ manifest.engine }} ·
+          letters {{ manifest.letters[0] }} … {{ manifest.letters[-1] }}</p>
+      </div>
+      <a class="btn" href="{{ url_for('bid.file', tid=t.id, sub='documents', name=manifest.zip) }}">⬇ Download all (ZIP)</a>
+    </div>
+    <p class="small">Saved in: <code>{{ folder }}</code></p>
+  </section>
+
+  {% for o in manifest.outputs %}
+  <section class="card">
+    <div class="between">
+      <h3>{{ loop.index }}. {{ o.title }} <span class="muted small">· {{ o.pages }} page{{ 's' if o.pages != 1 }}</span></h3>
+      <a class="btn ghost" href="{{ url_for('bid.file', tid=t.id, sub='documents', name=o.file) }}">⬇ {{ o.file }}</a>
+    </div>
+    <div class="thumbs">
+      {% for p in o.previews %}
+        <a href="{{ url_for('bid.file', tid=t.id, sub='preview', name=p) }}" target="_blank">
+          <img loading="lazy" src="{{ url_for('bid.file', tid=t.id, sub='preview', name=p) }}" alt="page {{ loop.index }}"></a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+{% endif %}
+
+<div class="actions">
+  <a class="btn ghost" href="{{ url_for('bid.documents', tid=t.id) }}">← Back</a>
+  <a class="btn ghost" href="{{ url_for('participate.participate') }}">Start another tender</a>
+</div>
+{% endblock %}

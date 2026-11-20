@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tender Participation Automation{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="{{ url_for('home.index') }}"><span class="dot"></span>Tender Automation</a>
+      <nav>
+        <a href="{{ url_for('home.index') }}" class="{{ 'on' if request.endpoint == 'home.index' }}">Home</a>
+        <a href="{{ url_for('participate.participate') }}" class="{{ 'on' if request.endpoint == 'participate.participate' }}">Participate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+    {% endwith %}
+
+    {% if t is defined and step is defined %}
+      <div class="bidbar">
+        <div><span class="muted">{{ company.name }}</span><h1>{{ t.bid_number or 'New bid' }}</h1></div>
+        <ol class="steps">
+          {% for key, label in [('details','1 · Bid details'),('documents','2 · Documents'),('generate','3 · Generate')] %}
+            <li class="{{ 'on' if step == key }}"><a href="{{ url_for('bid.' + key, tid=t.id) }}">{{ label }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="foot">Runs fully offline on this computer · files are saved in your output folder</footer>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
